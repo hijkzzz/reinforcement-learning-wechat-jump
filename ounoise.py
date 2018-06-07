@@ -1,5 +1,5 @@
+#coding: utf-8
 import numpy as np
-
 
 # from https://github.com/songrotek/DDPG/blob/master/ou_noise.py
 class OUNoise:
