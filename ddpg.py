@@ -60,7 +60,7 @@ def main():
                     format(i_episode, updates, value_loss, policy_loss))
                 break
 
-        if (i_episode + 1) % 10000 == 0:
+        if (i_episode + 1) % 1000 == 0:
             net.save_model()
 
 if __name__ == "__main__":

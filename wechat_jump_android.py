@@ -72,7 +72,7 @@ def get_score(file_name):
 
 
 restart_templet = cv2.imread('templet/again.jpg')
-
+h, w, _ = restart_templet.shape
 
 def restart(file_name):
     # Check game over and restart
@@ -83,10 +83,7 @@ def restart(file_name):
 
     if max_val > threshold:
         top_left = max_loc
-        left, top = (top_left[0] + restart_templet.shape[1] / 2,
-                     top_left[1] + restart_templet.shape[0] / 2)
-        left = int(random.uniform(left - 10, left + 10))
-        top = int(random.uniform(top - 10, top + 10))
+        left, top = (top_left[0] + w / 2, top_left[1] + h / 2)
         jump(100, left, top, left, top)
 
         return True
