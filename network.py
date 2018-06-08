@@ -122,9 +122,15 @@ class DDPG(object):
         self.actor_target = Actor()
         self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
 
+        for param in self.actor_target.parameters():
+            param.requires_grad=False
+
         self.critic = Critic()
         self.critic_target = Critic()
         self.critic_optim = Adam(self.critic.parameters(), lr=1e-4)
+
+        for param in self.critic_target.parameters():
+            param.requires_grad=False
 
         self.cuda = cuda
         self.gamma = gamma
@@ -202,6 +208,14 @@ class DDPG(object):
         # Copy parameters to target network
         soft_update(self.actor_target, self.actor, self.tau)
         soft_update(self.critic_target, self.critic, self.tau)
+
+        # Remove variable from GPU
+        if self.cuda:
+            state_batch = state_batch.cpu()
+            action_batch = action_batch.cpu()
+            reward_batch = reward_batch.cpu()
+            mask_batch = mask_batch.cpu()
+            next_state_batch = next_state_batch.cpu()
 
         return value_loss.item(), policy_loss.item()
 

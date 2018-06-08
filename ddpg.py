@@ -16,14 +16,14 @@ NUM_EPISODES = 100000
 GAMMA = 0.9
 TAU = 0.1
 EXPLORATION_END = 1000
-UPDATES_PER_STEP = 3
+UPDATES_PER_STEP = 2
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 
 def main():
-    net = DDPG(GAMMA, TAU, False)
+    net = DDPG(GAMMA, TAU, True)
     memory = ReplayMemory(REPLAY_SIZE)
     ounoise = OUNoise(1, scale=1)
 
