@@ -137,6 +137,8 @@ class DDPG(object):
         self.tau = tau
 
         if self.cuda:
+            print("CUDA On")
+
             self.actor.cuda()
             self.actor_target.cuda()
 
@@ -209,7 +211,7 @@ class DDPG(object):
         soft_update(self.actor_target, self.actor, self.tau)
         soft_update(self.critic_target, self.critic, self.tau)
 
-        return value_loss.data[0], policy_loss.data[0]
+        return value_loss.item(), policy_loss.item()
 
     def save_model(self, suffix=""):
         """Save Actor and Critic
