@@ -52,7 +52,10 @@ class Actor(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1),
             nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5
-        self.layer6 = nn.Linear(64 * 5 * 5, 1)
+        self.layer6 = nn.Sequential(
+            nn.Linear(64 * 5 * 5, 1),
+            nn.Tanh()
+        )
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -153,8 +156,7 @@ class DDPG(object):
             mu += torch.Tensor(action_noise.noise()).cuda() \
                 if self.cuda else torch.Tensor(action_noise.noise())
 
-        return max([0], mu.data[0].cpu().numpy() \
-                         if self.cuda else mu.data[0].numpy())
+        return mu.data[0].cpu().numpy() if self.cuda else mu.data[0].numpy()
 
     def update_parameters(self, batch):
         """Train actor network and critic network

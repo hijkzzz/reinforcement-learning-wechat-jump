@@ -12,10 +12,10 @@ import wechat_jump_android as env
 SEED = 4
 BATCH_SIZE = 32
 REPLAY_SIZE = 10000
-NUM_EPISODES = 10 * 10000
+NUM_EPISODES = 100000
 GAMMA = 0.9
 TAU = 0.1
-EXPLORATION_END = 100
+EXPLORATION_END = 1000
 UPDATES_PER_STEP = 3
 
 torch.manual_seed(SEED)
@@ -23,9 +23,9 @@ np.random.seed(SEED)
 
 
 def main():
-    net = DDPG(GAMMA, TAU, torch.cuda.is_available())
+    net = DDPG(GAMMA, TAU, False)
     memory = ReplayMemory(REPLAY_SIZE)
-    ounoise = OUNoise(1, scale=1, mu = 0.5, theta=0.2, sigma=1)
+    ounoise = OUNoise(1, scale=1)
 
     state = env.get_init_state()
     updates = 0
@@ -36,6 +36,8 @@ def main():
     for i_episode in range(NUM_EPISODES):
 
         while True:
+            ounoise.reset()
+
             action = net.select_action(state, ounoise)
             transition = env.step(action)
             memory.push(transition)
@@ -49,7 +51,7 @@ def main():
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
                     transitions = memory.sample(BATCH_SIZE)
-                    batch = Transition(*zip(*transitions)) # * 打散为参数
+                    batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)
                     updates += 1
 
@@ -57,7 +59,7 @@ def main():
                     "Episode: {}, Updates: {}, Value Loss: {}, Policy Loss: {}".
                     format(i_episode, updates, value_loss, policy_loss))
 
-            if (i_episode + 1) % 10000 == 0:
+            if (i_episode + 1) % 1000 == 0:
                 net.save_model()
 
 if __name__ == "__main__":

@@ -119,8 +119,10 @@ def step(action):
     global last_score
     state = preprocess(Image.open('autojump.png'))
 
+    # 0.3s >> 3.3s
+    press_time = (action[0] + 1) / 2 * 3000 + 300
     x1, y1, x2, y2 = get_press_position()
-    jump(action[0] * 1000, x1, y1, x2, y2)
+    jump(press_time, x1, y1, x2, y2)
     time.sleep(3)
 
     pull_screenshot('autojump.png')
