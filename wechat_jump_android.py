@@ -141,7 +141,7 @@ def step(action):
         reward = score - last_score
         reward = reward if reward > 0 else -1
         last_score = score
-        mask = 1
+        mask = 1 if reward > 0 else 0
 
     print("Press Time: {} ms, Mask: {}, Reward: {}".format(press_time, mask, reward))
 
