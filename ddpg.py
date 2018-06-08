@@ -1,5 +1,6 @@
 #coding: utf-8
 
+import os
 import torch
 import numpy as np
 
@@ -24,10 +25,13 @@ np.random.seed(SEED)
 def main():
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
-    ounoise = OUNoise(1, scale=1, theta=0.15, sigma=1)
+    ounoise = OUNoise(1, scale=1, mu = 0.5, theta=0.2, sigma=1)
 
     state = env.get_init_state()
     updates = 0
+
+    if os.path.exists('models/ddpg_actor_'):
+        net.load_model('models/ddpg_actor_', 'models/ddpg_critic_')
 
     for i_episode in range(NUM_EPISODES):
 
@@ -37,7 +41,7 @@ def main():
             memory.push(transition)
 
             # Game Over
-            if transition.next_state is None:
+            if transition.reward == -2:
                 state = env.get_init_state()
             else:
                 state = transition.next_state
@@ -53,6 +57,8 @@ def main():
                     "Episode: {}, Updates: {}, Value Loss: {}, Policy Loss: {}".
                     format(i_episode, updates, value_loss, policy_loss))
 
+            if (i_episode + 1) % 10000 == 0:
+                net.save_model()
 
 if __name__ == "__main__":
     main()

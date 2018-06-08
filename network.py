@@ -153,8 +153,8 @@ class DDPG(object):
             mu += torch.Tensor(action_noise.noise()).cuda() \
                 if self.cuda else torch.Tensor(action_noise.noise())
 
-        return max([0], (mu.data[0].cpu().numpy() \
-                         if self.cuda else mu.data[0].numpy()) + 0.3)
+        return max([0], mu.data[0].cpu().numpy() \
+                         if self.cuda else mu.data[0].numpy())
 
     def update_parameters(self, batch):
         """Train actor network and critic network

@@ -126,21 +126,20 @@ def step(action):
     pull_screenshot('autojump.png')
     reward = 0
     mask = 0
+    next_state = preprocess(Image.open('autojump.png'))
 
     # Game Over
     if restart('autojump.png'):
-        reward = -100
+        reward = -2
         last_score = 0
         mask = 0
-        next_state = None
     else:
         score = get_score('autojump.png')
 
         reward = score - last_score
-        reward = reward if reward > 0 else -100
+        reward = reward if reward > 0 else -1
         last_score = score
         mask = 1
-        next_state = preprocess(Image.open('autojump.png'))
 
     print("Action: {}, Mask: {}, Reward: {}".format(action, mask, reward))
 
@@ -148,5 +147,5 @@ def step(action):
         state=torch.Tensor(state.unsqueeze(0)),
         action=torch.Tensor(action),
         mask=torch.Tensor([mask]),
-        next_state=None if next_state is None else torch.Tensor(next_state.unsqueeze(0)),
+        next_state=torch.Tensor(next_state.unsqueeze(0)),
         reward=torch.Tensor([reward]))
