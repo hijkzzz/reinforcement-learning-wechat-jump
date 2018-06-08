@@ -23,12 +23,11 @@ np.random.seed(SEED)
 
 
 def main():
-    net = DDPG(GAMMA, TAU, True)
+    net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
     ounoise = OUNoise(1, scale=0.8)
 
     state = env.get_init_state()
-    updates = 0
 
     if os.path.exists('models/ddpg_actor_'):
         net.load_model('models/ddpg_actor_', 'models/ddpg_critic_')
@@ -38,7 +37,8 @@ def main():
         while True:
             ounoise.reset()
 
-            action = net.select_action(state, ounoise)
+            action = net.select_action(state, ounoise) \
+                    if i_episode < EXPLORATION_END else net.select_action(state)
             transition = env.step(action)
             memory.push(transition)
 
@@ -53,11 +53,10 @@ def main():
                     transitions = memory.sample(BATCH_SIZE)
                     batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)
-                    updates += 1
 
                 print(
-                    "Episode: {}, Updates: {}, Value Loss: {}, Policy Loss: {}".
-                    format(i_episode, updates, value_loss, policy_loss))
+                    "Episode: {}, Value Loss: {}, Policy Loss: {}".
+                    format(i_episode, value_loss, policy_loss))
                 break
 
         if (i_episode + 1) % 1000 == 0:
