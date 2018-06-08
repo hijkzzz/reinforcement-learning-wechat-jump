@@ -9,10 +9,9 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
-NOISE_SCALE = 300
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 REPLAY_SIZE = 10000
-NUM_EPISODES = 10 * 0000
+NUM_EPISODES = 10 * 10000
 GAMMA = 0.9
 TAU = 0.1
 EXPLORATION_END = 100
@@ -23,22 +22,25 @@ np.random.seed(SEED)
 
 
 def main():
-    net = DDPG(GAMMA, TAU)
+    net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
-    ounoise = OUNoise(1)
+    ounoise = OUNoise(1, scale=1, theta=0.15, sigma=1)
 
     state = env.get_init_state()
     updates = 0
 
     for i_episode in range(NUM_EPISODES):
-        ounoise.reset()
 
         while True:
             action = net.select_action(state, ounoise)
             transition = env.step(action)
             memory.push(transition)
 
-            state = transition.next_state
+            # Game Over
+            if transition.next_state is None:
+                state = env.get_init_state()
+            else:
+                state = transition.next_state
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):

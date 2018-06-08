@@ -113,7 +113,7 @@ class Critic(nn.Module):
 
 
 class DDPG(object):
-    def __init__(self, gamma, tau):
+    def __init__(self, gamma, tau, cuda=False):
 
         self.actor = Actor()
         self.actor_target = Actor()
@@ -123,8 +123,16 @@ class DDPG(object):
         self.critic_target = Critic()
         self.critic_optim = Adam(self.critic.parameters(), lr=1e-4)
 
+        self.cuda = cuda
         self.gamma = gamma
         self.tau = tau
+
+        if self.cuda:
+            self.actor.cuda()
+            self.actor_target.cuda()
+
+            self.critic.cuda()
+            self.critic_target.cuda()
 
         hard_update(self.actor_target,
                     self.actor)  # Make sure target is with the same weight
@@ -135,15 +143,18 @@ class DDPG(object):
         """
 
         self.actor.eval()
-        mu = self.actor((Variable(state)))
+        mu = self.actor(
+            Variable(state).cuda() if self.cuda else Variable(state))
 
         self.actor.train()
         mu = mu.data
 
         if action_noise is not None:
-            mu += torch.Tensor(action_noise.noise())
+            mu += torch.Tensor(action_noise.noise()).cuda() \
+                if self.cuda else torch.Tensor(action_noise.noise())
 
-        return max(0, mu.data.numpy()[0])
+        return max([0], (mu.data[0].cpu().numpy() \
+                         if self.cuda else mu.data[0].numpy()) + 0.3)
 
     def update_parameters(self, batch):
         """Train actor network and critic network
@@ -152,17 +163,24 @@ class DDPG(object):
         state_batch = Variable(torch.cat(batch.state))
         action_batch = Variable(torch.cat(batch.action))
         reward_batch = Variable(torch.cat(batch.reward))
-        mask_batch = Variable(torch.cat(batch.mask)) # 0 == GAME OVER
+        mask_batch = Variable(torch.cat(batch.mask))  # 0 == GAME OVER
         next_state_batch = Variable(torch.cat(batch.next_state))
 
-        next_action_batch = self.actor_target(next_state_batch)
-        next_state_action_values = self.critic_target(next_state_batch,
-                                        next_action_batch)
+        if self.cuda:
+            state_batch = state_batch.cuda()
+            action_batch = action_batch.cuda()
+            reward_batch = reward_batch.cuda()
+            mask_batch = mask_batch.cuda()
+            next_state_batch = next_state_batch.cuda()
 
+        next_action_batch = self.actor_target(next_state_batch)
+        next_q_values = self.critic_target(next_state_batch, next_action_batch)
+
+        # 对齐形状
         reward_batch = reward_batch.unsqueeze(1)
         mask_batch = mask_batch.unsqueeze(1)
         expected_q_batch = reward_batch + (
-            self.gamma * mask_batch * next_state_action_values)
+            self.gamma * mask_batch * next_q_values)
 
         # Train Critic Network
         self.critic_optim.zero_grad()
