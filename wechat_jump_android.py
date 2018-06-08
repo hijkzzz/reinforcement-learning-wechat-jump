@@ -119,8 +119,8 @@ def step(action):
     global last_score
     state = preprocess(Image.open('autojump.png'))
 
-    # 0.3s >> 3.3s
-    press_time = (action[0] + 1) / 2 * 3000 + 300
+    # 0s >> 2s
+    press_time = (action[0] + 1) / 2 * 2000
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
     time.sleep(3)
@@ -143,7 +143,7 @@ def step(action):
         last_score = score
         mask = 1
 
-    print("Action: {}, Mask: {}, Reward: {}".format(action, mask, reward))
+    print("Press Time: {} ms, Mask: {}, Reward: {}".format(press_time, mask, reward))
 
     return Transition(
         state=torch.Tensor(state.unsqueeze(0)),

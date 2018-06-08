@@ -178,15 +178,15 @@ class DDPG(object):
         next_action_batch = self.actor_target(next_state_batch)
         next_q_values = self.critic_target(next_state_batch, next_action_batch)
 
-        # 对齐形状
         reward_batch = reward_batch.unsqueeze(1)
         mask_batch = mask_batch.unsqueeze(1)
         expected_q_batch = reward_batch + (
             self.gamma * mask_batch * next_q_values)
 
         # Train Critic Network
+        action_batch.unsqueeze(1)
         self.critic_optim.zero_grad()
-        q_batch = self.critic((state_batch), (action_batch))
+        q_batch = self.critic(state_batch, action_batch)
         value_loss = F.mse_loss(q_batch, expected_q_batch)
         value_loss.backward()
         self.critic_optim.step()
@@ -194,7 +194,7 @@ class DDPG(object):
         # Train Actor Network
         self.actor_optim.zero_grad()
         # Maxmise E(Value)
-        policy_loss = -self.critic((state_batch), self.actor((state_batch)))
+        policy_loss = -self.critic(state_batch, self.actor(state_batch))
         policy_loss = policy_loss.mean()
         policy_loss.backward()
         self.actor_optim.step()
