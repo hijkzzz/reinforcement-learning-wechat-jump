@@ -184,7 +184,7 @@ class DDPG(object):
             self.gamma * mask_batch * next_q_values)
 
         # Train Critic Network
-        action_batch.unsqueeze(1)
+        action_batch = action_batch.unsqueeze(1)
         self.critic_optim.zero_grad()
         q_batch = self.critic(state_batch, action_batch)
         value_loss = F.mse_loss(q_batch, expected_q_batch)
