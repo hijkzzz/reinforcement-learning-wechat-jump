@@ -36,7 +36,7 @@ def main():
         ounoise.reset()
 
         while True:
-            action = net.select_action(state, ounoise) \
+            action = net.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
             memory.push(transition)
