@@ -209,15 +209,7 @@ class DDPG(object):
         soft_update(self.actor_target, self.actor, self.tau)
         soft_update(self.critic_target, self.critic, self.tau)
 
-        # Remove variable from GPU
-        if self.cuda:
-            state_batch = state_batch.cpu()
-            action_batch = action_batch.cpu()
-            reward_batch = reward_batch.cpu()
-            mask_batch = mask_batch.cpu()
-            next_state_batch = next_state_batch.cpu()
-
-        return value_loss.item(), policy_loss.item()
+        return value_loss.data[0], policy_loss.data[0]
 
     def save_model(self, suffix=""):
         """Save Actor and Critic
