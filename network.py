@@ -96,9 +96,9 @@ class Critic(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1),
             nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5 + 1
-        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 128), nn.ReLU())
+        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 256), nn.ReLU())
         # 128 * 1
-        self.layer7 = nn.Sequential(nn.Linear(128, 1), nn.ReLU())
+        self.layer7 = nn.Sequential(nn.Linear(256, 1), nn.LeakyReLU(0.1))
 
     def forward(self, inputs, actions):
 
