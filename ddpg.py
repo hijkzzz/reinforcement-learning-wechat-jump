@@ -26,27 +26,20 @@ def main():
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
     ounoise = OUNoise(1, scale=0.8)
-
-    state = env.get_init_state()
+    env.init_state()
 
     if os.path.exists('models/ddpg_actor_'):
         net.load_model('models/ddpg_actor_', 'models/ddpg_critic_')
 
+
     for i_episode in range(NUM_EPISODES):
+        ounoise.reset()
 
         while True:
-            ounoise.reset()
-
             action = net.select_action(state, ounoise) \
-                    if i_episode < EXPLORATION_END else net.select_action(state)
+                    if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
             memory.push(transition)
-
-            # Game Over
-            if transition.reward == -2:
-                state = env.get_init_state()
-            else:
-                state = transition.next_state
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
