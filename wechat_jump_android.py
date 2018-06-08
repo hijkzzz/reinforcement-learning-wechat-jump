@@ -7,6 +7,7 @@ from PIL import Image
 
 import cv2
 import numpy as np
+import torch
 from torchvision import transforms
 from replay_memory import Transition
 
@@ -103,8 +104,13 @@ def get_press_position():
     top = int(random.uniform(top - 100, top + 100))
     return (left, top, left, top)
 
-
 last_score = 0
+
+def get_init_state():
+    global last_score
+    pull_screenshot('autojump.png')
+    last_score = get_score('autojump.png')
+    return preprocess(Image.open('autojump.png'))
 
 def step(action):
     """Peform action and return state
@@ -114,27 +120,29 @@ def step(action):
     state = preprocess(Image.open('autojump.png'))
 
     x1, y1, x2, y2 = get_press_position()
-    jump(action, x1, y1, x2, y2)
+    jump(action[0], x1, y1, x2, y2)
     time.sleep(3)
 
     pull_screenshot('autojump.png')
+    next_state = preprocess(Image.open('autojump.png'))
+    reward = 0
+    mask = 0
+
     if restart('autojump.png'):
+        reward = -8
         last_score = 0
-        return Transition(
-            state=state, action=action, mask=0, next_state=None, reward=0)
+        mask = 0
     else:
         score = get_score('autojump.png')
+
         reward = score - last_score
+        reward = reward if reward > 0 else -2
         last_score = score
+        mask = 1
 
-        next_state = preprocess(Image.open('autojump.png'))
-        return Transition(
-            state=state,
-            action=action,
-            mask=1,
-            next_state=next_state,
-            reward=reward)
-
-
-if __name__ == "__main__":
-    print(step(1000))
+    return Transition(
+        state=torch.Tensor(state),
+        action=torch.Tensor(action),
+        mask=torch.Tensor(mask),
+        next_state=torch.Tensor(next_state),
+        reward=torch.Tensor([reward]))

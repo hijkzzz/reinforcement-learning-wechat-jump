@@ -117,7 +117,6 @@ class DDPG(object):
 
         self.actor = Actor()
         self.actor_target = Actor()
-        self.actor_perturbed = Actor()
         self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
 
         self.critic = Critic()
@@ -144,7 +143,7 @@ class DDPG(object):
         if action_noise is not None:
             mu += torch.Tensor(action_noise.noise())
 
-        return mu.data.numpy()[0]
+        return max(0, mu.data.numpy()[0])
 
     def update_parameters(self, batch):
         """Train actor network and critic network
@@ -153,7 +152,7 @@ class DDPG(object):
         state_batch = Variable(torch.cat(batch.state))
         action_batch = Variable(torch.cat(batch.action))
         reward_batch = Variable(torch.cat(batch.reward))
-        mask_batch = Variable(torch.cat(batch.mask)) # is end
+        mask_batch = Variable(torch.cat(batch.mask)) # 0 == GAME OVER
         next_state_batch = Variable(torch.cat(batch.next_state))
 
         next_action_batch = self.actor_target(next_state_batch)
