@@ -107,6 +107,7 @@ state = None
 def init_state():
     global last_score, state
 
+    time.sleep(0.5)
     pull_screenshot('autojump.png')
     last_score = get_score('autojump.png')
     state = torch.Tensor(preprocess(Image.open('autojump.png')).unsqueeze(0))
@@ -125,8 +126,8 @@ def step(action):
     time.sleep(3.5)
 
     pull_screenshot('autojump.png')
-    next_state = preprocess(Image.open('autojump.png'))
-    state_backup = state
+    last_state = state
+    state = preprocess(Image.open('autojump.png')).unsqueeze(0)
 
     # Game Over
     if restart('autojump.png'):
@@ -141,13 +142,12 @@ def step(action):
         reward = reward if reward > 0 else -1
         last_score = score
         mask = 1
-        state = next_state
 
     print("Press Time: {} ms, Mask: {}, Reward: {}".format(press_time, mask, reward))
 
     return Transition(
-        state=torch.Tensor(state_backup.unsqueeze(0)),
+        state=torch.Tensor(last_state),
         action=torch.Tensor(action),
         mask=torch.Tensor([mask]),
-        next_state=torch.Tensor(next_state.unsqueeze(0)),
+        next_state=torch.Tensor(state),
         reward=torch.Tensor([reward]))
