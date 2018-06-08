@@ -1,1 +1,3 @@
 .vscode
+*.pyc
+autojump.png
