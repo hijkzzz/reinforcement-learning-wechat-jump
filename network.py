@@ -125,14 +125,14 @@ class DDPG(object):
 
         self.actor = Actor()
         self.actor_target = Actor()
-        self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
+        self.actor_optim = Adam(self.actor.parameters(), lr=1e-5)
 
         for param in self.actor_target.parameters():
             param.requires_grad=False
 
         self.critic = Critic()
         self.critic_target = Critic()
-        self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
+        self.critic_optim = Adam(self.critic.parameters(), lr=1e-4)
 
         for param in self.critic_target.parameters():
             param.requires_grad=False
