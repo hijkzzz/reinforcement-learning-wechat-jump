@@ -47,7 +47,7 @@ def main():
             else:
                 memory0.push(transition)
 
-            if len(memory1) > BATCH_SIZE // 2:
+            if len(memory0) > BATCH_SIZE // 2 and len(memory1) > BATCH_SIZE // 2:
                 for _ in range(UPDATES_PER_STEP):
                     transitions = memory0.sample(BATCH_SIZE // 2) + memory1.sample(BATCH_SIZE // 2)
                     random.shuffle(transitions)
