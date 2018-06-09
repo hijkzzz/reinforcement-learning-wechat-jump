@@ -19,7 +19,6 @@ GAMMA = 0.99
 TAU = 0.001
 EXPLORATION_END = 100
 UPDATES_PER_STEP = 4
-NEGATIVE_SAMPLE_RATE = 0.2
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -27,7 +26,8 @@ np.random.seed(SEED)
 
 def main():
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
-    memory = ReplayMemory(REPLAY_SIZE)
+    memory0 = ReplayMemory(REPLAY_SIZE / 2)
+    memory1 = ReplayMemory(REPLAY_SIZE / 2)
     ounoise = OUNoise(1, scale=NOISE_SCALE)
     env.init_state()
 
@@ -42,13 +42,15 @@ def main():
             action = net.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
+            if transition.reward > 0:
+                memory1.push(transition)
+            else:
+                memory0.push(transition)
 
-            if transition.reward > 0 or random.random() < NEGATIVE_SAMPLE_RATE:
-                memory.push(transition)
-
-            if len(memory) > BATCH_SIZE:
+            if len(memory0) + len(memory1) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
-                    transitions = memory.sample(BATCH_SIZE)
+                    transitions = memory0.sample(BATCH_SIZE / 2) + memory1.sample(BATCH_SIZE / 2)
+
                     batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)
 
