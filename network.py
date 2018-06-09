@@ -103,7 +103,7 @@ class Critic(nn.Module):
         # 64 * 5 * 5 + 1
         self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 128), nn.ReLU())
         # 128 * 1
-        self.layer7 = nn.Sequential(nn.Linear(128, 1), nn.ReLU())
+        self.layer7 = nn.Sequential(nn.Linear(128, 1), nn.LeakyReLU())
 
     def forward(self, inputs, actions):
 
