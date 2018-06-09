@@ -131,7 +131,7 @@ def step(action):
 
     # Game Over
     if restart('autojump.png'):
-        reward = -1
+        reward = 0
         last_score = 0
         mask = 0
         init_state()
@@ -139,9 +139,9 @@ def step(action):
         score = get_score('autojump.png')
 
         reward = score - last_score
-        reward = reward if reward > 0 else -1
+        reward = reward
         last_score = score
-        mask = 1 if reward > 0 else 0
+        mask = 1
 
     print("Press Time: {} ms, Mask: {}, Reward: {}".format(press_time, mask, reward))
 
