@@ -28,8 +28,8 @@ def main():
     HALF_BATCH_SIZE = int(BATCH_SIZE / 2)
 
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
-    memory0 = ReplayMemory(REPLAY_SIZE / 2)
-    memory1 = ReplayMemory(REPLAY_SIZE / 2)
+    memory0 = ReplayMemory(HALF_BATCH_SIZE)
+    memory1 = ReplayMemory(HALF_BATCH_SIZE)
     ounoise = OUNoise(1, scale=NOISE_SCALE)
     env.init_state()
 
