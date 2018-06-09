@@ -25,6 +25,8 @@ np.random.seed(SEED)
 
 
 def main():
+    HALF_BATCH_SIZE = int(BATCH_SIZE / 2)
+
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory0 = ReplayMemory(REPLAY_SIZE / 2)
     memory1 = ReplayMemory(REPLAY_SIZE / 2)
@@ -47,9 +49,9 @@ def main():
             else:
                 memory0.push(transition)
 
-            if len(memory0) + len(memory1) > BATCH_SIZE:
+            if len(memory0) > HALF_BATCH_SIZE and len(memory1) > HALF_BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
-                    transitions = memory0.sample(BATCH_SIZE // 2) + memory1.sample(BATCH_SIZE // 2)
+                    transitions = memory0.sample(HALF_BATCH_SIZE) + memory1.sample(HALF_BATCH_SIZE)
 
                     batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)
