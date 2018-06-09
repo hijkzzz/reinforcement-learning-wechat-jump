@@ -1,6 +1,7 @@
 #coding: utf-8
 
 import os
+import random
 import torch
 import numpy as np
 
@@ -13,8 +14,8 @@ SEED = 4
 BATCH_SIZE = 4
 REPLAY_SIZE = 10000
 NUM_EPISODES = 100000
-GAMMA = 0.9
-TAU = 0.1
+GAMMA = 0.99
+TAU = 0.01
 EXPLORATION_END = 100
 UPDATES_PER_STEP = 1
 
@@ -25,7 +26,7 @@ np.random.seed(SEED)
 def main():
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
-    ounoise = OUNoise(1, scale=0.8)
+    ounoise = OUNoise(1, scale=2)
     env.init_state()
 
     if os.path.exists('models/ddpg_actor_'):
@@ -39,7 +40,6 @@ def main():
             action = net.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
-            memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):

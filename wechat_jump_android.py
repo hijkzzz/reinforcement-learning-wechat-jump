@@ -119,7 +119,7 @@ def step(action):
     """
     global last_score, state
 
-    # 0s >> 1.5s
+    # 0s >> 2s
     press_time = (action[0] + 1) / 2 * 1500
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)

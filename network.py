@@ -127,7 +127,7 @@ class DDPG(object):
 
         self.critic = Critic()
         self.critic_target = Critic()
-        self.critic_optim = Adam(self.critic.parameters(), lr=1e-4)
+        self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
 
         for param in self.critic_target.parameters():
             param.requires_grad=False
@@ -164,9 +164,8 @@ class DDPG(object):
             mu += torch.Tensor(action_noise.noise()).cuda() \
                 if self.cuda else torch.Tensor(action_noise.noise())
 
-        action = mu.data[0].cpu().numpy() if self.cuda else mu.data[0].numpy()
-        action[0] = min(max(action[0], -1), 1)
-        return action
+        mu.clamp_(-1, 1)
+        return mu.data[0].cpu().numpy() if self.cuda else mu.data[0].numpy()
 
     def update_parameters(self, batch):
         """Train actor network and critic network
