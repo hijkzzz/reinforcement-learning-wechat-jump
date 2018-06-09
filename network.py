@@ -53,7 +53,11 @@ class Actor(nn.Module):
             nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5
         self.layer6 = nn.Sequential(
-            nn.Linear(64 * 5 * 5, 1),
+            nn.Linear(64 * 5 * 5, 128),
+            nn.ReLU()
+        )
+        self.layer7 = nn.Sequential(
+            nn.Linear(128, 1),
             nn.Tanh()
         )
 
@@ -65,6 +69,7 @@ class Actor(nn.Module):
         out = self.layer5(out)
         out = out.view(out.size(0), -1)
         out = self.layer6(out)
+        out = self.layer7(out)
 
         return out
 
@@ -96,9 +101,9 @@ class Critic(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1),
             nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5 + 1
-        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 256), nn.ReLU())
+        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 128), nn.ReLU())
         # 128 * 1
-        self.layer7 = nn.Sequential(nn.Linear(256, 1), nn.LeakyReLU())
+        self.layer7 = nn.Sequential(nn.Linear(128, 1), nn.ReLU())
 
     def forward(self, inputs, actions):
 
