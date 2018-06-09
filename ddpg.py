@@ -19,6 +19,7 @@ GAMMA = 0.99
 TAU = 0.01
 EXPLORATION_END = 100
 UPDATES_PER_STEP = 8
+NEGATIVE_SAMPLE_RATE = 0.1
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -41,7 +42,9 @@ def main():
             action = net.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
-            memory.push(transition)
+
+            if transition.reward > 0 or random.random() < NEGATIVE_SAMPLE_RATE:
+                memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
