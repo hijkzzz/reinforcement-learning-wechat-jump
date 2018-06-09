@@ -11,14 +11,14 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
-NOISE_SCALE = 1
-BATCH_SIZE = 8
+NOISE_SCALE = 2
+BATCH_SIZE = 1
 REPLAY_SIZE = 10000
 NUM_EPISODES = 100000
 GAMMA = 0.99
 TAU = 0.01
-EXPLORATION_END = 200
-UPDATES_PER_STEP = 1
+EXPLORATION_END = 100
+UPDATES_PER_STEP = 8
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -33,7 +33,7 @@ def main():
     if os.path.exists('models/ddpg_actor_'):
         net.load_model('models/ddpg_actor_', 'models/ddpg_critic_')
 
-
+    updates = 0
     for i_episode in range(NUM_EPISODES):
         ounoise.reset()
 
@@ -49,9 +49,11 @@ def main():
                     batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)
 
-                print(
-                    "Episode: {}, Value Loss: {}, Policy Loss: {}".
-                    format(i_episode, value_loss, policy_loss))
+                    print(
+                        "Episode: {}, Updates: {}, Value Loss: {}, Policy Loss: {}".
+                        format(i_episode, updates, value_loss, policy_loss))
+                    updates += 1
+
                 break
 
         if (i_episode + 1) % 1000 == 0:
