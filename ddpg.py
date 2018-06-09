@@ -41,6 +41,7 @@ def main():
             action = net.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else net.select_action(env.state)
             transition = env.step(action)
+            memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
