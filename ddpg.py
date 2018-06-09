@@ -49,7 +49,7 @@ def main():
 
             if len(memory0) + len(memory1) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
-                    transitions = memory0.sample(BATCH_SIZE / 2) + memory1.sample(BATCH_SIZE / 2)
+                    transitions = memory0.sample(BATCH_SIZE // 2) + memory1.sample(BATCH_SIZE // 2)
 
                     batch = Transition(*zip(*transitions))
                     value_loss, policy_loss = net.update_parameters(batch)

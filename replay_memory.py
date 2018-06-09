@@ -22,6 +22,7 @@ class ReplayMemory(object):
         self.memory[self.position] = trans
         self.position = (self.position + 1) % self.capacity
 
+
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
 
