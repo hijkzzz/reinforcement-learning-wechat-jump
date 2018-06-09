@@ -11,6 +11,7 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
+NOISE_SCALE=1
 BATCH_SIZE = 4
 REPLAY_SIZE = 10000
 NUM_EPISODES = 100000
@@ -26,7 +27,7 @@ np.random.seed(SEED)
 def main():
     net = DDPG(GAMMA, TAU, torch.cuda.is_available())
     memory = ReplayMemory(REPLAY_SIZE)
-    ounoise = OUNoise(1, scale=2)
+    ounoise = OUNoise(1, scale=NOISE_SCALE)
     env.init_state()
 
     if os.path.exists('models/ddpg_actor_'):
