@@ -32,8 +32,7 @@ def main():
     env.init_state()
 
     if os.path.exists('models/ddpg_actor_'):
-        ddpg.load_model('models/ddpg_actor_', 'models/ddpg_critic_',
-                        'models/ddpg_actor_target_', 'models/ddpg_critic_target_')
+        ddpg.load_model()
 
     updates = 0
     for i_episode in range(NUM_EPISODES):

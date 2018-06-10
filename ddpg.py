@@ -237,17 +237,16 @@ class DDPG(object):
         torch.save(self.actor_target.state_dict(), actor_target_path)
         torch.save(self.critic_target.state_dict(), critic_target_path)
 
-    def load_model(self, actor_path, critic_path, actor_target_path, critic_target_path):
+    def load_model(self, suffix=""):
         """Load Actor and Critic
         """
-
+        actor_path = "models/ddpg_actor_{}".format(suffix)
+        critic_path = "models/ddpg_critic_{}".format(suffix)
+        actor_target_path = "models/ddpg_actor_target_{}".format(suffix)
+        critic_target_path = "models/ddpg_critic_target_{}".format(suffix)
         print('Loading models from {} and {}'.format(actor_path, critic_path))
-        if actor_path is not None:
-            self.actor.load_state_dict(torch.load(actor_path))
-        if critic_path is not None:
-            self.critic.load_state_dict(torch.load(critic_path))
 
-        if actor_target_path is not None:
-            self.actor_target.load_state_dict(torch.load(actor_target_path))
-        if critic_target_path is not None:
-            self.critic_target.load_state_dict(torch.load(critic_target_path))
+        self.actor.load_state_dict(torch.load(actor_path))
+        self.critic.load_state_dict(torch.load(critic_path))
+        self.actor_target.load_state_dict(torch.load(actor_target_path))
+        self.critic_target.load_state_dict(torch.load(critic_target_path))

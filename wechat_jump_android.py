@@ -65,9 +65,9 @@ def get_score(file_name):
     match_result.sort(key=itemgetter(1))
 
     score = 0
-    last_position = -5
+    last_position = -10
     for x in match_result:
-        if x[0] - last_position < 5:
+        if x[0] - last_position < 10:
             continue
         score = 10 * score + x[0]
         last_position = x[0]
@@ -142,7 +142,7 @@ def step(action):
     else:
         score = get_score('autojump.png')
 
-        reward = score - last_score
+        reward = max(score - last_score, 0)
         last_score = score
         mask = 1
 
