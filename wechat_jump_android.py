@@ -65,8 +65,12 @@ def get_score(file_name):
     match_result.sort(key=itemgetter(1))
 
     score = 0
+    last_position = -5
     for x in match_result:
+        if x[0] - last_position < 5:
+            continue
         score = 10 * score + x[0]
+        last_position = x[0]
 
     return score
 
@@ -107,7 +111,7 @@ state = None
 def init_state():
     global last_score, state
 
-    time.sleep(0.5)
+    time.sleep(0.3)
     pull_screenshot('autojump.png')
     last_score = get_score('autojump.png')
     state = torch.Tensor(preprocess(Image.open('autojump.png')).unsqueeze(0))
@@ -123,7 +127,7 @@ def step(action):
     press_time = (action[0] + 1) / 2 * 1000 + 300
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
-    time.sleep(3.5)
+    time.sleep(3.7)
 
     pull_screenshot('autojump.png')
     last_state = state
@@ -138,7 +142,7 @@ def step(action):
     else:
         score = get_score('autojump.png')
 
-        reward = max(score - last_score, 0)
+        reward = score - last_score
         last_score = score
         mask = 1
 
