@@ -48,7 +48,7 @@ def jump(press_time, swipe_x1, swipe_y1, swipe_x2, swipe_y2):
 
 
 number_templet = [cv2.imread('templet/{}.jpg'.format(i)) for i in range(10)]
-threshold = 0.99
+threshold = 0.98
 
 
 def get_score(file_name):
@@ -138,8 +138,7 @@ def step(action):
     else:
         score = get_score('autojump.png')
 
-        reward = score - last_score
-        reward = reward
+        reward = max(score - last_score, 0)
         last_score = score
         mask = 1
 
