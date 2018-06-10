@@ -242,3 +242,7 @@ class DDPG(object):
             self.actor.load_state_dict(torch.load(actor_path))
         if critic_path is not None:
             self.critic.load_state_dict(torch.load(critic_path))
+
+        hard_update(self.actor_target,
+                    self.actor)  # Make sure target is with the same weight
+        hard_update(self.critic_target, self.critic)
