@@ -18,7 +18,7 @@ NUM_EPISODES = 100000
 GAMMA = 0.99
 TAU = 0.001
 EXPLORATION_END = 0
-UPDATES_PER_STEP = 2
+UPDATES_PER_STEP = 4
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -42,8 +42,8 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
-            if transition.reward > 0 or random.random() < 0.3:
-                memory.push(transition)
+            # if transition.reward > 0 or random.random() < 0.1:
+            memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
