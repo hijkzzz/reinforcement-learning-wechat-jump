@@ -22,6 +22,7 @@ UPDATES_PER_STEP = 4
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
+random.seed(SEED)
 
 
 def main():
