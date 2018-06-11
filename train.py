@@ -18,7 +18,7 @@ NUM_EPISODES = 100000
 GAMMA = 0.99
 TAU = 0.001
 EXPLORATION_END = 0
-UPDATES_PER_STEP = 4
+UPDATES_PER_STEP = 2
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -27,8 +27,7 @@ random.seed(SEED)
 
 def main():
     ddpg = DDPG(GAMMA, TAU, torch.cuda.is_available())
-    memory0 = ReplayMemory(REPLAY_SIZE // 2)
-    memory1 = ReplayMemory(REPLAY_SIZE // 2)
+    memory = ReplayMemory(REPLAY_SIZE)
     ounoise = OUNoise(1, scale=NOISE_SCALE)
     env.init_state()
 
@@ -43,14 +42,12 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
-            if transition.reward > 0:
-                memory1.push(transition)
-            else:
-                memory0.push(transition)
+            if transition.reward > 0 or random.random() < 0.3:
+                memory.push(transition)
 
-            if len(memory0) > BATCH_SIZE // 2 and len(memory1) > BATCH_SIZE // 2:
+            if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
-                    transitions = memory0.sample(BATCH_SIZE // 2) + memory1.sample(BATCH_SIZE // 2)
+                    transitions = memory.sample(BATCH_SIZE)
                     random.shuffle(transitions)
 
                     batch = Transition(*zip(*transitions))

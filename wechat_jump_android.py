@@ -48,7 +48,7 @@ def jump(press_time, swipe_x1, swipe_y1, swipe_x2, swipe_y2):
 
 
 number_templet = [cv2.imread('templet/{}.jpg'.format(i)) for i in range(10)]
-threshold = 0.97
+threshold = 0.98
 
 
 def get_score(file_name):
@@ -60,17 +60,17 @@ def get_score(file_name):
     for i, number in enumerate(number_templet):
         res = cv2.matchTemplate(number, background, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res > threshold)
-        for pt in zip(*loc):
+        for pt in zip(*loc[::-1]):
             match_result.append((i, pt[0]))
     match_result.sort(key=itemgetter(1))
 
     score = 0
-    last_position = -5
+    last_position = 0
     for x in match_result:
-        if x[0] - last_position < 5:
+        if x[1] - last_position < 30:
             continue
         score = 10 * score + x[0]
-        last_position = x[0]
+        last_position = x[1]
 
     return score
 
@@ -127,7 +127,7 @@ def step(action):
     press_time = (action[0] + 1) / 2 * 1000 + 300
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
-    time.sleep(4)
+    time.sleep(3.8)
 
     pull_screenshot('autojump.png')
     last_state = state
@@ -157,4 +157,5 @@ def step(action):
 
 
 if __name__ == "__main__":
-    print(get_score('templet/test.jpg'))
+    print(get_score('templet/test2.jpg'))
+    print(restart('templet/test3.jpg'))
