@@ -61,7 +61,7 @@ class Actor(nn.Module):
             nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
             nn.MaxPool2d(2))
         # 128 * 5 * 5
-        self.layer6 = nn.Sequential(nn.Linear(128 * 5 * 5, 1), nn.ReLU())
+        self.layer6 = nn.Sequential(nn.Linear(128 * 5 * 5, 1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -133,11 +133,17 @@ class DDPG(object):
         self.actor_target = Actor()
         self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
 
+        for param in self.actor_target.parameters():
+            param.requires_grad = False
+
 
         self.critic = Critic()
         self.critic.apply(weights_init)
         self.critic_target = Critic()
         self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
+
+        for param in self.critic_target.parameters():
+            param.requires_grad = False
 
         self.cuda = cuda
         self.gamma = gamma
