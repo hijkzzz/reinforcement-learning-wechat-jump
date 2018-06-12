@@ -135,7 +135,7 @@ def step(action):
 
     # Game Over
     if restart('autojump.png'):
-        reward = -1
+        reward = 0
         last_score = 0
         mask = 0
         init_state()

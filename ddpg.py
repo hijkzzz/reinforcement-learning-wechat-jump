@@ -72,7 +72,7 @@ class Critic(nn.Module):
 
     def __init__(self):
         super(Critic, self).__init__()
-               # 3 * 224 * 224
+        # 3 * 224 * 224
         self.layer1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3), nn.BatchNorm2d(64), nn.ReLU(),
             nn.MaxPool2d(2))

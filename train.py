@@ -11,7 +11,7 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
-NOISE_SCALE = 2
+NOISE_SCALE = 1
 BATCH_SIZE = 16
 REPLAY_SIZE = 50000
 NUM_EPISODES = 100000
@@ -42,8 +42,8 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
-            # if transition.reward > 0 or random.random() < 0.1:
-            memory.push(transition)
+            if transition.reward > 0:
+                memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
