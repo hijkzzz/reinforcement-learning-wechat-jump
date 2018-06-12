@@ -12,13 +12,13 @@ import wechat_jump_android as env
 
 SEED = 2
 NOISE_SCALE = 1
-BATCH_SIZE = 8
+BATCH_SIZE = 16
 REPLAY_SIZE = 50000
 NUM_EPISODES = 100000
 GAMMA = 0.99
 TAU = 0.001
 EXPLORATION_END = 100
-UPDATES_PER_STEP = 4
+UPDATES_PER_STEP = 1
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
@@ -42,8 +42,8 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
-            # if transition.reward or not memory.too_many_0():
-            memory.push(transition)
+            if transition.reward > 0 or not memory.too_many_0():
+                memory.push(transition)
 
             if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
