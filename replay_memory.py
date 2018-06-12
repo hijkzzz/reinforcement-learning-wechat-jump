@@ -14,7 +14,6 @@ class ReplayMemory(object):
         self.capacity = capacity
         self.memory = []
         self.position = 0
-        self.count = [0, 1]
 
     def push(self, trans):
         """Saves a transition."""
@@ -24,14 +23,8 @@ class ReplayMemory(object):
         self.memory[self.position] = trans
         self.position = (self.position + 1) % self.capacity
 
-        self.count[int(trans.reward > 0)] += 1
-
-
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
-
-    def too_many_0(self):
-        return int(self.count[1] < self.count[0])
 
     def __len__(self):
         return len(self.memory)
