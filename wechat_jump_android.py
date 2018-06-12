@@ -48,7 +48,7 @@ def jump(press_time, swipe_x1, swipe_y1, swipe_x2, swipe_y2):
 
 
 number_templet = [cv2.imread('templet/{}.jpg'.format(i)) for i in range(10)]
-threshold = 0.98
+threshold = 0.95
 
 
 def get_score(file_name):

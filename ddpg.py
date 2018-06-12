@@ -25,6 +25,15 @@ def hard_update(target, source):
         target_param.data.copy_(param.data)
 
 
+def weights_init(m):
+    """Init network parameters
+    """
+    if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+        nn.init.xavier_uniform_(m.weight)
+    elif isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d):
+        nn.init.constant_(m.weight, 1)
+        nn.init.constant_(m.bias, 0)
+
 class Actor(nn.Module):
     """Actor Network
     """
@@ -94,10 +103,12 @@ class Critic(nn.Module):
             nn.MaxPool2d(2))
         # 128 * 5 * 5
         self.layer6 = nn.Sequential(
-            nn.Linear(128 * 5 * 5 + 1, 128), nn.BatchNorm1d(128), nn.ReLU())
+            nn.Linear(128 * 5 * 5 + 1, 64), nn.BatchNorm1d(64), nn.ReLU())
         # 128 * 1
-        self.layer7 = nn.Sequential(nn.Linear(128, 64), nn.BatchNorm1d(64), nn.ReLU())
-        self.layer8 = nn.Sequential(nn.Linear(64, 1))
+        self.layer7 = nn.Sequential(
+            nn.Linear(64, 32), nn.BatchNorm1d(32), nn.ReLU())
+        self.layer8 = nn.Sequential(nn.Linear(32, 1))
+
 
     def forward(self, inputs, actions):
 
@@ -118,18 +129,15 @@ class DDPG(object):
     def __init__(self, gamma, tau, cuda=False):
 
         self.actor = Actor()
+        self.actor.apply(weights_init)
         self.actor_target = Actor()
         self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
 
-        for param in self.actor_target.parameters():
-            param.requires_grad = False
 
         self.critic = Critic()
+        self.critic.apply(weights_init)
         self.critic_target = Critic()
         self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
-
-        for param in self.critic_target.parameters():
-            param.requires_grad = False
 
         self.cuda = cuda
         self.gamma = gamma
