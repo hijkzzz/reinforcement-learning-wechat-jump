@@ -30,8 +30,8 @@ class ReplayMemory(object):
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
 
-    def get_negative_rate(self):
-        return 1 if self.count[1] > self.count[0] else 0.1
+    def too_many_0(self):
+        return int(self.count[1] < self.count[0])
 
     def __len__(self):
         return len(self.memory)

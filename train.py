@@ -42,7 +42,7 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
-            # if transition.reward > 0 or random.random() < memory.get_negative_rate():
+            # if transition.reward or not memory.too_many_0():
             memory.push(transition)
 
             if len(memory) > BATCH_SIZE:

@@ -203,7 +203,7 @@ class DDPG(object):
         action_batch = action_batch.unsqueeze(1)
         self.critic_optim.zero_grad()
         q_batch = self.critic(state_batch, action_batch)
-        value_loss = F.smooth_l1_loss(q_batch, expected_q_batch)
+        value_loss = F.mse_loss(expected_q_batch, q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
