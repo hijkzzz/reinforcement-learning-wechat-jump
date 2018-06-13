@@ -106,12 +106,9 @@ class Critic(nn.Module):
         # 64 * 5 * 5 + 1
         self.layer6 = nn.Sequential(
             nn.Linear(64 * 5 * 5 + 1, 64), nn.BatchNorm1d(64), nn.ReLU())
-        # 64 * 5 * 5
-        self.layer6_ = nn.Sequential(
-            nn.Linear(64 * 5 * 5, 64), nn.BatchNorm1d(64), nn.ReLU())
         # 128
         self.layer7 = nn.Sequential(
-            nn.Linear(128, 1),  nn.BatchNorm1d(1), nn.ReLU())
+            nn.Linear(64, 1), nn.BatchNorm1d(1), nn.ReLU())
 
     def forward(self, inputs, actions):
 
@@ -121,9 +118,8 @@ class Critic(nn.Module):
         out = self.layer4(out)
         out = self.layer5(out)
         out = out.view(out.size(0), -1)
-        A = self.layer6(torch.cat((out, actions), 1))
-        V = self.layer6_(out)
-        out = self.layer7(torch.cat((A, V), 1))
+        out = self.layer6(torch.cat((out, actions), 1))
+        out = self.layer7(out)
 
         return out
 
