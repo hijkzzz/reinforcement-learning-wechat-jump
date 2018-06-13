@@ -123,8 +123,8 @@ def step(action):
     """
     global last_score, state
 
-    # 0.3s >> 1.3s
-    press_time = (action[0] + 1) / 2 * 1000 + 300
+    # Average = 800 ms
+    press_time = (action[0] + 1) * 800
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
     time.sleep(3.9)
