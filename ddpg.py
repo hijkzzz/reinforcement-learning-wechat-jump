@@ -42,26 +42,26 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         # 3 * 224 * 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.BatchNorm2d(64), nn.ReLU(),
+            nn.Conv2d(3, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
         # 64 * 111 * 111
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
         # 64 * 54 * 54
         self.layer3 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 26 * 26
+        # 64 * 26 * 26
         self.layer4 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 12 * 12
+        # 64 * 12 * 12
         self.layer5 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 5 * 5
-        self.layer6 = nn.Sequential(nn.Linear(128 * 5 * 5, 1), nn.Tanh())
+        # 64 * 5 * 5
+        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5, 1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -83,32 +83,30 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
         # 3 * 224 * 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.BatchNorm2d(64), nn.ReLU(),
+            nn.Conv2d(3, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
         # 64 * 111 * 111
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
         # 64 * 54 * 54
         self.layer3 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 26 * 26
+        # 64 * 26 * 26
         self.layer4 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 12 * 12
+        # 64 * 12 * 12
         self.layer5 = nn.Sequential(
-            nn.Conv2d(128, 128, kernel_size=3), nn.BatchNorm2d(128), nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3), nn.BatchNorm2d(64, momentum=1), nn.ReLU(),
             nn.MaxPool2d(2))
-        # 128 * 5 * 5
+        # 64 * 5 * 5
         self.layer6 = nn.Sequential(
-            nn.Linear(128 * 5 * 5 + 1, 64), nn.BatchNorm1d(64), nn.ReLU())
+            nn.Linear(64 * 5 * 5 + 1, 64), nn.BatchNorm1d(128, momentum=1), nn.ReLU())
         # 64 * 1
         self.layer7 = nn.Sequential(
-            nn.Linear(64, 32), nn.BatchNorm1d(32), nn.ReLU())
-        # 32 * 1
-        self.layer8 = nn.Sequential(nn.Linear(32, 1))
+            nn.Linear(128, 1), nn.ReLU())
 
 
     def forward(self, inputs, actions):
@@ -121,7 +119,6 @@ class Critic(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.layer6(torch.cat((out, actions), 1))
         out = self.layer7(out)
-        out = self.layer8(out)
 
         return out
 
@@ -136,7 +133,6 @@ class DDPG(object):
 
         for param in self.actor_target.parameters():
             param.requires_grad = False
-
 
         self.critic = Critic()
         self.critic.apply(weights_init)

@@ -10,7 +10,7 @@ from ounoise import OUNoise
 from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
-SEED = 2
+SEED = 4
 NOISE_SCALE = 1
 BATCH_SIZE = 16
 REPLAY_SIZE = 50000
@@ -27,8 +27,7 @@ random.seed(SEED)
 
 def main():
     ddpg = DDPG(GAMMA, TAU, torch.cuda.is_available())
-    memory0 = ReplayMemory(REPLAY_SIZE // 2)
-    memory1 = ReplayMemory(REPLAY_SIZE // 2)
+    memory = ReplayMemory(REPLAY_SIZE)
     ounoise = OUNoise(1, scale=NOISE_SCALE)
     env.init_state()
 
@@ -43,17 +42,11 @@ def main():
             action = ddpg.select_action(env.state, ounoise) \
                     if i_episode < EXPLORATION_END else ddpg.select_action(env.state)
             transition = env.step(action)
+            memory.push(transition)
 
-            if transition.reward < 1:
-                memory0.push(transition)
-            else:
-                memory1.push(transition)
-
-            if len(memory0) > BATCH_SIZE // 2 and len(
-                    memory1) > BATCH_SIZE // 2:
+            if len(memory) > BATCH_SIZE:
                 for _ in range(UPDATES_PER_STEP):
-                    transitions = memory0.sample(
-                        BATCH_SIZE // 2) + memory1.sample(BATCH_SIZE // 2)
+                    transitions = memory.sample(BATCH_SIZE)
                     random.shuffle(transitions)
 
                     batch = Transition(*zip(*transitions))
@@ -68,7 +61,6 @@ def main():
 
         if (i_episode + 1) % 1000 == 0:
             ddpg.save_model()
-
 
 if __name__ == "__main__":
     main()
