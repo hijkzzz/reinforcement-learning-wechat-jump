@@ -63,7 +63,7 @@ class Actor(nn.Module):
             nn.MaxPool2d(2))
         # 64 * 5 * 5
         self.layer6 = nn.Sequential(
-            nn.Linear(64 * 5 * 5, 1), nn.Tanh())
+            nn.Linear(64 * 5 * 5, 1), nn.BatchNorm1d(1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -111,7 +111,7 @@ class Critic(nn.Module):
             nn.Linear(64 * 5 * 5, 64), nn.BatchNorm1d(64), nn.ReLU())
         # 128
         self.layer7 = nn.Sequential(
-            nn.Linear(128, 1), nn.ReLU())
+            nn.Linear(128, 1),  nn.BatchNorm1d(1), nn.ReLU())
 
     def forward(self, inputs, actions):
 
