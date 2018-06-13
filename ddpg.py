@@ -103,10 +103,10 @@ class Critic(nn.Module):
             nn.MaxPool2d(2))
         # 64 * 5 * 5
         self.layer6 = nn.Sequential(
-            nn.Linear(64 * 5 * 5 + 1, 64), nn.BatchNorm1d(128, momentum=1), nn.ReLU())
+            nn.Linear(64 * 5 * 5 + 1, 64), nn.BatchNorm1d(64, momentum=1), nn.ReLU())
         # 64 * 1
         self.layer7 = nn.Sequential(
-            nn.Linear(128, 1), nn.ReLU())
+            nn.Linear(64, 1), nn.ReLU())
 
 
     def forward(self, inputs, actions):
