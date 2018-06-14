@@ -43,27 +43,21 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         # 3 * 224 * 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 111 * 111
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 54 * 54
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 26 * 26
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 12 * 12
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5
-        self.layer6 = nn.Sequential(
-            nn.Linear(64 * 5 * 5, 1), nn.Tanh())
+        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5, 1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -85,30 +79,23 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
         # 3 * 224 * 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 111 * 111
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 54 * 54
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 26 * 26
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 12 * 12
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
         # 64 * 5 * 5 + 1
-        self.layer6 = nn.Sequential(
-            nn.Linear(64 * 5 * 5 + 1, 64), nn.ReLU())
+        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 64), nn.ReLU())
         # 128
-        self.layer7 = nn.Sequential(
-            nn.Linear(64, 1), nn.ReLU())
+        self.layer7 = nn.Sequential(nn.Linear(64, 1))
 
     def forward(self, inputs, actions):
 
