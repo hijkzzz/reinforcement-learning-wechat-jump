@@ -2,7 +2,7 @@
 用 DDPG 算法玩微信跳一跳
 
 ## Tricks
-* Actor 用 Tanh 输出动作 (-1, 1) 缩放到 400 ms ~ 1200 ms
+* Actor 用 Tanh 输出动作 (-1, 1) 缩放到 400 ms ~ 1200 ms (根据机型设置)
 * Critic 最后一层用 Linear 输出 Q 值
 * BATH_SIZE = 16, 去除了 Batch Normalization 层
 * 噪音为标准差等于 0.2 的正态分布
@@ -23,7 +23,8 @@ python train.py
 ```
 
 ## Test
-models 中有在一加5上训练一天的模型
+models 中有在一加5上训练了5000个样本(10小时收集)的模型
+已经能跳几百分了
 
 ```
 python infer.py
