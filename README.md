@@ -1,5 +1,7 @@
 # WeChat Jump DDPG
-用 DDPG 算法玩微信跳一跳
+用 CNN + DDPG 算法玩微信跳一跳
+屏幕图像作为输入状态
+按压时间为输出动作
 
 ## Tricks
 * Actor 用 Tanh 输出动作 (-1, 1) 缩放到 400 ms ~ 1200 ms (根据机型设置)
@@ -25,6 +27,7 @@ python train.py
 ## Test
 models 中有在一加5上训练了5000个样本(10小时收集)的模型
 已经能跳几百分了
+还需要进一步调参+训练
 
 ```
 python infer.py
