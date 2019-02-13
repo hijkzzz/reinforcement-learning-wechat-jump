@@ -2,11 +2,10 @@
 End-to-end training Wechat-Jump AI using DDPG algorithm
 
 ## Environment
-PyTorch
-PyOpenCV
-
-Android Device(1920 * 1080)
-ADB Tools
+* PyTorch
+* PyOpenCV
+* Android Device(1920 * 1080)
+* ADB Tools
 
 ## Detail
 * The `actor` uses tanh as the activation function to output the action
