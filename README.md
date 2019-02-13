@@ -1,34 +1,25 @@
-# WeChat Jump DDPG
-用 CNN + DDPG 算法玩微信跳一跳
-屏幕图像作为输入状态
-按压时间为输出动作
+# Reinforcement Learning Wechat Jump
+End-to-end training Wechat-Jump AI using DDPG algorithm
 
-## Tricks
-* Actor 用 Tanh 输出动作 (-1, 1) 缩放到 400 ms ~ 1200 ms (根据机型设置)
-* Critic 最后一层用 Linear 输出 Q 值
-* BATH_SIZE = 16, 去除了 Batch Normalization 层
-* 噪音为标准差等于 0.2 的正态分布
-* OpenCV 的模板匹配提取分数和获取结束状态
-* adb 调试控制手机
+## Environment
+PyTorch
+PyOpenCV
+
+Android Device(1920 * 1080)
+ADB Tools
+
+## Detail
+* The `actor` uses tanh as the activation function to output the action
+* `Critic` uses a linear layer to output Q values
+* Noise is a normal distribution with a `std=0.2`
+* Get game state with template matching of opencv
 
 ## Train
-**本项目需安装 PyTorch/OpenCV/ADB**
-
-因为使用真机训练几秒钟才能跳一次，样本的收集速度是比较慢的，
-可能需要训练好几天的时间
-
-* 测试环境为一加5
-* 分辨率1920 * 1080
-* 暂未兼容其它分辨率
 ```
 python train.py
 ```
 
-## Test
-models 中有在一加5上训练了5000个样本(10小时收集)的模型
-已经能跳几百分了
-还需要进一步调参+训练
-
+## Infer
 ```
 python infer.py
 ```
