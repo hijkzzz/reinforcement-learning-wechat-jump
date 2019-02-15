@@ -1,4 +1,4 @@
-# Reinforcement Learning Wechat Jump
+# Deep Reinforcement Learning Wechat Jump
 End-to-end training Wechat-Jump AI using DDPG algorithm
 
 ## Environment
