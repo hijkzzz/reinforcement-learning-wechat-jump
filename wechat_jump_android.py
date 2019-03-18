@@ -62,12 +62,13 @@ def get_score(file_name):
         loc = np.where(res > threshold)
         for pt in zip(*loc[::-1]):
             match_result.append((i, pt[0]))
+    match_result = list(set(match_result))
     match_result.sort(key=itemgetter(1))
 
     score = 0
     last_position = 0
     for x in match_result:
-        if x[1] - last_position < 30:
+        if x[1] - last_position < 20:
             continue
         score = 10 * score + x[0]
         last_position = x[1]
@@ -113,7 +114,7 @@ def init_state():
 
     time.sleep(0.1)
     pull_screenshot('autojump.png')
-    last_score = get_score('autojump.png')
+    last_score = 0
     state = torch.Tensor(preprocess(Image.open('autojump.png')).unsqueeze(0))
 
 
@@ -141,7 +142,7 @@ def step(action):
         init_state()
     else:
         score = get_score('autojump.png')
-        reward = min(score - last_score - 1, 1)
+        reward = 1 if score - last_score >= 2 else 0
         last_score = score
         mask = 1
 
