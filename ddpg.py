@@ -117,7 +117,7 @@ class DDPG(object):
         self.actor = Actor()
         self.actor.apply(weights_init)
         self.actor_target = Actor()
-        self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
+        self.actor_optim = Adam(self.actor.parameters(), lr=1e-4, weight_decay=0.0001)
 
         for param in self.actor_target.parameters():
             param.requires_grad = False
@@ -125,7 +125,7 @@ class DDPG(object):
         self.critic = Critic()
         self.critic.apply(weights_init)
         self.critic_target = Critic()
-        self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
+        self.critic_optim = Adam(self.critic.parameters(), lr=1e-3, weight_decay=0.0001)
 
         for param in self.critic_target.parameters():
             param.requires_grad = False
@@ -135,7 +135,7 @@ class DDPG(object):
         self.tau = tau
 
         if self.cuda:
-            print("CUDA On")
+            print("CUDA ON")
 
             self.actor.cuda()
             self.actor_target.cuda()
