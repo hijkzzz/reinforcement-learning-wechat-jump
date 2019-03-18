@@ -41,23 +41,25 @@ class Actor(nn.Module):
 
     def __init__(self):
         super(Actor, self).__init__()
-        # 3 * 224 * 224
+        # 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 111 * 111
+            nn.Conv2d(3, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 112
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 54 * 54
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 56
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 26 * 26
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 28
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 12 * 12
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 14
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 5 * 5
-        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5, 1), nn.Tanh())
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 7
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 2, kernel_size=1), nn.BatchNorm2d(2), nn.ReLU(inplace=True))
+        # 7
+        self.layer7 = nn.Sequential(nn.Linear(2 * 7 * 7, 1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -65,8 +67,9 @@ class Actor(nn.Module):
         out = self.layer3(out)
         out = self.layer4(out)
         out = self.layer5(out)
-        out = out.view(out.size(0), -1)
         out = self.layer6(out)
+        out = out.view(out.size(0), -1)
+        out = self.layer7(out)
 
         return out
 
@@ -77,25 +80,26 @@ class Critic(nn.Module):
 
     def __init__(self):
         super(Critic, self).__init__()
-        # 3 * 224 * 224
+        # 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 111 * 111
+            nn.Conv2d(3, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 112
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 54 * 54
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 56
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 26 * 26
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 28
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 12 * 12
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 14
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3), nn.ReLU(), nn.MaxPool2d(2))
-        # 64 * 5 * 5 + 1
-        self.layer6 = nn.Sequential(nn.Linear(64 * 5 * 5 + 1, 64), nn.ReLU())
-        # 64
-        self.layer7 = nn.Sequential(nn.Linear(64, 1))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+        # 7
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1), nn.BatchNorm2d(4), nn.ReLU(inplace=True))
+        # 7
+        self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7, 64, nn.ReLU(inplace=True)))
+        self.layer8 = nn.Sequential(nn.Linear(64, 1))
 
     def forward(self, inputs, actions):
 
@@ -107,6 +111,7 @@ class Critic(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.layer6(torch.cat((out, actions), 1))
         out = self.layer7(out)
+        out = self.layer8(out)
 
         return out
 

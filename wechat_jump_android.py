@@ -123,11 +123,11 @@ def step(action):
     """
     global last_score, state
 
-    # 350 ms ~ 1050 ms
-    press_time = (action[0] + 1) * 350 + 350
+    # 300 ms ~ 1000 ms
+    press_time = (action[0] + 1) * 350 + 300
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
-    time.sleep(3.9)
+    time.sleep(3)
 
     pull_screenshot('autojump.png')
     last_state = state
@@ -135,14 +135,13 @@ def step(action):
 
     # Game Over
     if restart('autojump.png'):
-        reward = 0
+        reward = -1
         last_score = 0
         mask = 0
         init_state()
     else:
         score = get_score('autojump.png')
-
-        reward = min(score - last_score, 2)
+        reward = min(score - last_score - 1, 1)
         last_score = score
         mask = 1
 

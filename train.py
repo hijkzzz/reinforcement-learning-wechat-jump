@@ -11,13 +11,13 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
-NOISE_SCALE = 0.5
+NOISE_SCALE = 0.2
 BATCH_SIZE = 32
 REPLAY_SIZE = 10000
-NUM_EPISODES = 20000
-EXPLORATION_END = 10000
-GAMMA = 0.99
-TAU = 0.001
+NUM_EPISODES = 10000
+EXPLORATION_END = 7000
+GAMMA = 0.98
+TAU = 0.002
 UPDATES_PER_STEP = 1
 
 torch.manual_seed(SEED)
