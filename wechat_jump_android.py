@@ -48,7 +48,7 @@ def jump(press_time, swipe_x1, swipe_y1, swipe_x2, swipe_y2):
 
 
 number_templet = [cv2.imread('templet/{}.jpg'.format(i)) for i in range(10)]
-threshold = 0.95
+threshold = 0.96
 
 
 def get_score(file_name):
@@ -112,7 +112,6 @@ state = None
 def init_state():
     global last_score, state
 
-    time.sleep(0.1)
     pull_screenshot('autojump.png')
     last_score = 0
     state = torch.Tensor(preprocess(Image.open('autojump.png')).unsqueeze(0))
