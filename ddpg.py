@@ -57,7 +57,7 @@ class Actor(nn.Module):
         self.layer5 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 7
-        self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1, bias=False), nn.BatchNorm2d(2), nn.ReLU(inplace=True))
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1, bias=False), nn.BatchNorm2d(4), nn.ReLU(inplace=True))
         # 7
         self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7, 1), nn.Tanh())
 
@@ -96,7 +96,7 @@ class Critic(nn.Module):
         self.layer5 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 7
-        self.layer6 = nn.Sequential(nn.Conv2d(64, 8, kernel_size=1, bias=False), nn.BatchNorm2d(4), nn.ReLU(inplace=True))
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 8, kernel_size=1, bias=False), nn.BatchNorm2d(8), nn.ReLU(inplace=True))
         # 7
         self.layer7 = nn.Sequential(nn.Linear(8 * 7 * 7 + 1, 128, nn.ReLU(inplace=True)))
         self.layer8 = nn.Sequential(nn.Linear(128, 64), nn.ReLU(inplace=True))
