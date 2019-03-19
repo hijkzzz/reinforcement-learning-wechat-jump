@@ -206,7 +206,6 @@ class DDPG(object):
         self.critic_optim.step()
 
         # Train Actor Network
-        self.critic.eval()
         self.actor.train()
         self.actor_optim.zero_grad()
         # Maxmise E(Value)
