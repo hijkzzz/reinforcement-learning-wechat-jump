@@ -108,9 +108,9 @@ class Critic(nn.Module):
         out = self.layer3(out)
         out = self.layer4(out)
         out = self.layer5(out)
+        out = self.layer6(out)
         out = out.view(out.size(0), -1)
-        out = self.layer6(torch.cat((out, actions), 1))
-        out = self.layer7(out)
+        out = self.layer7(torch.cat((out, actions), 1))
         out = self.layer8(out)
 
         return out
