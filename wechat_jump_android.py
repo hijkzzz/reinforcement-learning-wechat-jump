@@ -62,7 +62,6 @@ def get_score(file_name):
         loc = np.where(res > threshold)
         for pt in zip(*loc[::-1]):
             match_result.append((i, pt[0]))
-    match_result = list(set(match_result))
     match_result.sort(key=itemgetter(1))
 
     score = 0
@@ -127,7 +126,7 @@ def step(action):
     press_time = (action[0] + 1) * 350 + 300
     x1, y1, x2, y2 = get_press_position()
     jump(press_time, x1, y1, x2, y2)
-    time.sleep(3)
+    time.sleep(3.5)
 
     pull_screenshot('autojump.png')
     last_state = state
