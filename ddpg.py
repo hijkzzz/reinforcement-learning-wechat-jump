@@ -43,23 +43,23 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         # 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(3, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 112
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 56
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 28
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 14
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 7
-        self.layer6 = nn.Sequential(nn.Conv2d(64, 2, kernel_size=1), nn.ReLU(inplace=True))
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1, bias=False), nn.BatchNorm2d(2), nn.ReLU(inplace=True))
         # 7
-        self.layer7 = nn.Sequential(nn.Linear(2 * 7 * 7, 1), nn.Tanh())
+        self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7, 1), nn.Tanh())
 
     def forward(self, inputs):
         out = self.layer1(inputs)
@@ -82,24 +82,25 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
         # 224
         self.layer1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(3, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 112
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 56
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 28
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 14
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.ReLU(inplace=True), nn.MaxPool2d(2))
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False), nn.BatchNorm2d(64), nn.ReLU(inplace=True), nn.MaxPool2d(2))
         # 7
-        self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1), nn.ReLU(inplace=True))
+        self.layer6 = nn.Sequential(nn.Conv2d(64, 8, kernel_size=1, bias=False), nn.BatchNorm2d(4), nn.ReLU(inplace=True))
         # 7
-        self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7 + 1, 64, nn.ReLU(inplace=True)))
-        self.layer8 = nn.Sequential(nn.Linear(64, 1))
+        self.layer7 = nn.Sequential(nn.Linear(8 * 7 * 7 + 1, 128, nn.ReLU(inplace=True)))
+        self.layer8 = nn.Sequential(nn.Linear(128, 64), nn.ReLU(inplace=True))
+        self.layer9 = nn.Sequential(nn.Linear(64, 1))
 
     def forward(self, inputs, actions):
 
@@ -112,6 +113,7 @@ class Critic(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.layer7(torch.cat((out, actions), 1))
         out = self.layer8(out)
+        out = self.layer9(out)
 
         return out
 
@@ -206,6 +208,7 @@ class DDPG(object):
         self.critic_optim.step()
 
         # Train Actor Network
+        self.critic.eval()
         self.actor.train()
         self.actor_optim.zero_grad()
         # Maxmise E(Value)
