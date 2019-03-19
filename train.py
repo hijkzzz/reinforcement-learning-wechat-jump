@@ -11,7 +11,7 @@ from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
 SEED = 4
-NOISE_SCALE = 1
+NOISE_SCALE = 2
 BATCH_SIZE = 32
 REPLAY_SIZE = 10000
 NUM_EPISODES = 10000

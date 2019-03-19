@@ -48,7 +48,7 @@ def jump(press_time, swipe_x1, swipe_y1, swipe_x2, swipe_y2):
 
 
 number_templet = [cv2.imread('templet/{}.jpg'.format(i)) for i in range(10)]
-threshold = 0.96
+threshold = 0.95
 
 
 def get_score(file_name):
@@ -68,7 +68,7 @@ def get_score(file_name):
     score = 0
     last_position = 0
     for x in match_result:
-        if x[1] - last_position < 20:
+        if x[1] - last_position < 30:
             continue
         score = 10 * score + x[0]
         last_position = x[1]
@@ -89,7 +89,7 @@ def restart(file_name):
     if max_val > threshold:
         top_left = max_loc
         left, top = (top_left[0] + w / 2, top_left[1] + h / 2)
-        jump(100, left, top, left, top)
+        jump(50, left, top, left, top)
 
         return True
     else:
