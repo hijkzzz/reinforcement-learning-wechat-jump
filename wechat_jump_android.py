@@ -141,7 +141,7 @@ def step(action):
         init_state()
     else:
         score = get_score('autojump.png')
-        reward = max(min(score - last_score, 2), 0)
+        reward = 1 if score - last_score >= 1 else 0.1
         last_score = score
         mask = 1
 
