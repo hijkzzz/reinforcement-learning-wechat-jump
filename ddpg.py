@@ -137,9 +137,6 @@ class DDPG(object):
         for param in self.critic_target.parameters():
             param.requires_grad = False
 
-        self.actor_target.eval()
-        self.critic_target.eval()
-
         self.cuda = cuda
         self.gamma = gamma
         self.tau = tau
@@ -156,6 +153,9 @@ class DDPG(object):
         hard_update(self.actor_target,
                     self.actor)  # Make sure target is with the same weight
         hard_update(self.critic_target, self.critic)
+
+        self.actor_target.eval()
+        self.critic_target.eval()
 
     def select_action(self, state, action_noise=None):
         """Select action with noise
@@ -208,7 +208,6 @@ class DDPG(object):
         self.critic_optim.step()
 
         # Train Actor Network
-        self.critic.eval()
         self.actor.train()
         self.actor_optim.zero_grad()
         # Maxmise E(Value)
