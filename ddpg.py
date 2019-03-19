@@ -135,6 +135,9 @@ class DDPG(object):
         for param in self.critic_target.parameters():
             param.requires_grad = False
 
+        self.actor_target.eval()
+        self.critic_target.eval()
+
         self.cuda = cuda
         self.gamma = gamma
         self.tau = tau
@@ -159,8 +162,6 @@ class DDPG(object):
         self.actor.eval()
         mu = self.actor(
             Variable(state).cuda() if self.cuda else Variable(state))
-
-        self.actor.train()
         mu = mu.data
 
         if action_noise is not None:
@@ -194,9 +195,10 @@ class DDPG(object):
         mask_batch = mask_batch.unsqueeze(1)
         expected_q_batch = reward_batch + (
             self.gamma * mask_batch * next_q_values)
+        action_batch = action_batch.unsqueeze(1)
 
         # Train Critic Network
-        action_batch = action_batch.unsqueeze(1)
+        self.critic.train()
         self.critic_optim.zero_grad()
         q_batch = self.critic(state_batch, action_batch)
         value_loss = F.smooth_l1_loss(q_batch, expected_q_batch)
@@ -204,6 +206,8 @@ class DDPG(object):
         self.critic_optim.step()
 
         # Train Actor Network
+        self.critic.eval()
+        self.actor.train()
         self.actor_optim.zero_grad()
         # Maxmise E(Value)
         policy_loss = -self.critic(state_batch, self.actor(state_batch))
