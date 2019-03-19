@@ -98,7 +98,7 @@ class Critic(nn.Module):
         # 7
         self.layer6 = nn.Sequential(nn.Conv2d(64, 4, kernel_size=1), nn.BatchNorm2d(4), nn.ReLU(inplace=True))
         # 7
-        self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7, 64, nn.ReLU(inplace=True)))
+        self.layer7 = nn.Sequential(nn.Linear(4 * 7 * 7 + 1, 64, nn.ReLU(inplace=True)))
         self.layer8 = nn.Sequential(nn.Linear(64, 1))
 
     def forward(self, inputs, actions):
