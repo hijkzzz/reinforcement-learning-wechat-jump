@@ -12,13 +12,13 @@ import wechat_jump_android as env
 
 SEED = 4
 NOISE_SCALE = 1
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 REPLAY_SIZE = 10000
 NUM_EPISODES = 10000
 EXPLORATION_END = 8000
 GAMMA = 0.98
 TAU = 0.001
-UPDATES_PER_STEP = 2
+UPDATES_PER_STEP = 1
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
