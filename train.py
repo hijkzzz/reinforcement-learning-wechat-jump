@@ -10,9 +10,9 @@ from ounoise import OUNoise
 from replay_memory import ReplayMemory, Transition
 import wechat_jump_android as env
 
-SEED = 4
+SEED = 1
 NOISE_SCALE = 1
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 REPLAY_SIZE = 10000
 NUM_EPISODES = 10000
 EXPLORATION_END = 8000
