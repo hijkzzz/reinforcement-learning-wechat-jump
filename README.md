@@ -9,7 +9,7 @@ End-to-end training Wechat-Jump AI using DDPG algorithm
 
 ## Detail
 * Using screenshot as neural network input
-* The `actor` uses tanh as the activation function to output the action
+* The `actor` uses tanh as the activation function
 * `Critic` uses a linear layer to output Q values
 * Noise is a normal distribution with a `std=0.2`
 * Get game state with template matching of OpenCV
